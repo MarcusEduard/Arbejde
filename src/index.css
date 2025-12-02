@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 355 70% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 355 70% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 355 70% 15%;
+
+    --primary: 355 75% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 140 60% 25%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 355 20% 95%;
+    --muted-foreground: 355 10% 45%;
+
+    --accent: 45 95% 55%;
+    --accent-foreground: 355 70% 15%;
+
+    --destructive: 355 75% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 355 20% 90%;
+    --input: 355 20% 90%;
+    --ring: 355 75% 45%;
+
+    --radius: 1rem;
+    
+    /* Christmas theme colors */
+    --christmas-red: 355 75% 45%;
+    --christmas-green: 140 60% 25%;
+    --christmas-gold: 45 95% 55%;
+    --snow-white: 0 0% 98%;
+    
+    /* Gradients */
+    --gradient-festive: linear-gradient(135deg, hsl(var(--christmas-red)), hsl(var(--christmas-gold)));
+    --gradient-winter: linear-gradient(180deg, hsl(var(--snow-white)), hsl(355 20% 95%));
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 140 20% 10%;
+    --foreground: 0 0% 98%;
+
+    --card: 140 25% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 140 25% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 355 75% 50%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 140 50% 30%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 140 15% 20%;
+    --muted-foreground: 140 10% 60%;
+
+    --accent: 45 95% 60%;
+    --accent-foreground: 140 20% 10%;
+
+    --destructive: 355 75% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 140 15% 25%;
+    --input: 140 15% 25%;
+    --ring: 355 75% 50%;
+    
+    --christmas-red: 355 75% 50%;
+    --christmas-green: 140 50% 30%;
+    --christmas-gold: 45 95% 60%;
+    --snow-white: 140 20% 10%;
+    
+    --gradient-festive: linear-gradient(135deg, hsl(var(--christmas-red)), hsl(var(--christmas-gold)));
+    --gradient-winter: linear-gradient(180deg, hsl(140 20% 10%), hsl(140 15% 20%));
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background: var(--gradient-winter);
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .festive-gradient {
+    background: var(--gradient-festive);
+  }
+  
+  .winter-gradient {
+    background: var(--gradient-winter);
+  }
+  
+  .sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes sparkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.1); }
+  }
+  
+  @keyframes sleigh-ride {
+    0% { transform: translateX(-100px) translateY(0); }
+    25% { transform: translateX(25%) translateY(-20px); }
+    50% { transform: translateX(50%) translateY(0); }
+    75% { transform: translateX(75%) translateY(-20px); }
+    100% { transform: translateX(100%) translateY(0); }
+  }
+  
+  .sleigh-animation {
+    animation: sleigh-ride 8s ease-in-out;
+  }
+}
