@@ -18,10 +18,10 @@ export const ThemeSelector = ({ onSelect }: ThemeSelectorProps) => {
       {/* Header */}
       <div className="relative z-10 text-center mb-12">
         <h1 className="text-5xl md:text-7xl font-bold mb-4 text-white drop-shadow-lg">
-          🎉 Vælg dit tema 🎉
+          🎉 Vælg tema 🎉
         </h1>
         <p className="text-xl md:text-2xl text-white/70">
-          Hvilken fest fejrer I i dag?
+          Hvilken frokost har vi i dag?
         </p>
       </div>
 
