@@ -102,7 +102,7 @@ export const themeConfigs: Record<Theme, ThemeConfig> = {
       '🎅 Tag et shot snaps!',
       '🤪 Fortæl en sjov joke!',
       '🎁 Giv et kompliment til én fra HT!',
-      '🎄 Tag et shot snaps!',
+      '🐰 Tag et shot snaps!',
       '⭐ Fortæl en sjov joke!',
       '🔔 Bund din øl!',
       '❄️ Drik fra pungen!',
