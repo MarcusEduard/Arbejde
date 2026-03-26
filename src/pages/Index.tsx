@@ -2,8 +2,10 @@ import { useState } from "react";
 import { TableSetup } from "@/components/TableSetup";
 import { GuestInput } from "@/components/GuestInput";
 import { SeatAssignment } from "@/components/SeatAssignment";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { Button } from "@/components/ui/button";
 import { Snowflakes } from "@/components/Snowflakes";
+import { Theme, themeConfigs } from "@/lib/themeConfig";
 
 export interface Chair {
   id: string;
@@ -19,9 +21,15 @@ export interface Guest {
 }
 
 const Index = () => {
-  const [step, setStep] = useState<"setup" | "guests" | "game">("setup");
+  const [step, setStep] = useState<"theme" | "setup" | "guests" | "game">("theme");
+  const [theme, setTheme] = useState<Theme>("christmas");
   const [chairs, setChairs] = useState<Chair[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
+
+  const handleThemeSelect = (selected: Theme) => {
+    setTheme(selected);
+    setStep("setup");
+  };
 
   const handleSetupComplete = (setupChairs: Chair[]) => {
     setChairs(setupChairs);
@@ -31,6 +39,12 @@ const Index = () => {
   const handleGuestsComplete = (guestList: Guest[]) => {
     setGuests(guestList);
     setStep("game");
+  };
+
+  const handleBackToTheme = () => {
+    setStep("theme");
+    setChairs([]);
+    setGuests([]);
   };
 
   const handleBackToSetup = () => {
@@ -43,22 +57,34 @@ const Index = () => {
     setGuests([]);
   };
 
+  if (step === "theme") {
+    return <ThemeSelector onSelect={handleThemeSelect} />;
+  }
+
+  const tc = themeConfigs[theme];
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <Snowflakes />
+    <div className={`min-h-screen relative overflow-hidden bg-gradient-to-br ${tc.bodyBg}`}>
+      <Snowflakes theme={theme} />
       
       <div className="container mx-auto px-4 py-8 relative z-10">
         <header className="text-center mb-12">
           <h1 className="text-5xl md:text-7xl font-bold mb-4 festive-gradient bg-clip-text text-transparent">
-            🎅 HT Julefrokost pladsfordeling 🎄
+            {tc.titleEmojis[0]} {tc.title} {tc.titleEmojis[1]}
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground">
-            Lad julemanden bestemmer hvor vi skal sidde i dag!
+            {tc.subtitle}
           </p>
+          <button
+            onClick={handleBackToTheme}
+            className="mt-3 text-white/50 hover:text-white/80 text-sm underline transition-colors"
+          >
+            ← Skift tema
+          </button>
         </header>
 
         {step === "setup" && (
-          <TableSetup onComplete={handleSetupComplete} />
+          <TableSetup onComplete={handleSetupComplete} theme={theme} />
         )}
 
         {step === "guests" && (
@@ -66,6 +92,7 @@ const Index = () => {
             <GuestInput 
               chairCount={chairs.length}
               onComplete={handleGuestsComplete}
+              theme={theme}
             />
             <div className="text-center mt-4">
               <Button onClick={handleBackToSetup} variant="outline">
@@ -81,6 +108,7 @@ const Index = () => {
               chairs={chairs}
               guests={guests}
               onComplete={() => {}}
+              theme={theme}
             />
             <div className="text-center mt-4">
               <Button onClick={handleBackToGuests} variant="outline">

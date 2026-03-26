@@ -3,14 +3,17 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Chair, Guest } from "@/pages/Index";
 import { toast } from "sonner";
+import { Theme, themeConfigs } from "@/lib/themeConfig";
 
 interface SeatAssignmentProps {
   chairs: Chair[];
   guests: Guest[];
   onComplete: () => void;
+  theme: Theme;
 }
 
-export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }: SeatAssignmentProps) => {
+export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests, theme }: SeatAssignmentProps) => {
+  const tc = themeConfigs[theme];
   const [chairs, setChairs] = useState(initialChairs);
   const [guests, setGuests] = useState(initialGuests);
 
@@ -40,20 +43,8 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
   const [snapsTaken, setSnapsTaken] = useState(0);
   const [snapsGiven, setSnapsGiven] = useState(0);
 
-  // Julefrokost Challenges
-  const challenges = [
-    "🥃 Tag et shot snaps!",
-    "🎤 Tag et shot snaps",
-    "🍺 Bund en øl!",
-    "💃 Tag et nosseshot!",
-    "🎅 Tag et shot snaps!",
-    "🤪 Fortæl en sjov joke!",
-    "🎁 Giv et kompliment til én fra HT!",
-    "🎄 Tag et shot snaps!",
-    "⭐ Fortæl en sjov joke!",
-    "🔔 Bund din øl!",
-    "❄️ Drik fra pungen!",
-  ];
+  // Challenges (from theme config)
+  const challenges = tc.challenges;
 
   const unseatedGuests = guests.filter(g => !g.seated);
   const allSeated = unseatedGuests.length === 0;
@@ -70,11 +61,7 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
     setIsAnimating(true);
     
     // Choose random sound for the animation
-    const animationSounds = [
-      'jingle-bells-bells-only-181672.mp3', 
-      'sound-effect-we-wish-you-a-merry-christmas-music-box-260037.mp3',
-      '555-sonic-drum-rollm4a-09-34-49-431-62513.mp3'
-    ];
+    const animationSounds = tc.animationSounds;
     const randomSound = animationSounds[Math.floor(Math.random() * animationSounds.length)];
     
     // Start random Christmas sound
@@ -120,13 +107,14 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
       // Move Santa to final chosen chair
       setSantaPosition({ x: randomChair.x + 50, y: randomChair.y - 50 });
       
-      // Play random HOHOHO sound
-      const hohohoSounds = ['HOHOHO1.mp3', 'HOHOHO2.mp3', 'HOHOHO3.mp3'];
-      const randomHohoho = hohohoSounds[Math.floor(Math.random() * hohohoSounds.length)];
-      
-      if (hohohoAudioRef.current) {
-        hohohoAudioRef.current.src = `/${randomHohoho}`;
-        hohohoAudioRef.current.play().catch(console.error);
+      // Play celebration sound
+      const celebrationSounds = tc.celebrationSounds;
+      if (celebrationSounds.length > 0) {
+        const randomCelebration = celebrationSounds[Math.floor(Math.random() * celebrationSounds.length)];
+        if (hohohoAudioRef.current) {
+          hohohoAudioRef.current.src = `/${randomCelebration}`;
+          hohohoAudioRef.current.play().catch(console.error);
+        }
       }
       
       // Check if chair guess was correct and handle snaps
@@ -178,7 +166,7 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
     setHasTriggeredShuffle(true);
     setShowSantaShuffle(true);
 
-    toast.error("🎅 Julemanden siger: DET ER TID TIL AT BLANDE! Alle skifter pladser!", {
+    toast.error(tc.shuffleToast, {
       duration: 5000,
     });
   };
@@ -274,7 +262,7 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
 
   const triggerGrinchEvent = () => {
     setGrinchTriggered(true);
-    toast.error("🎅 Hov, nu kommer julemanden! Alle pladser bliver blandet!", {
+    toast.error(`${tc.characterEmoji} Hov, nu kommer ${tc.characterName}! Alle pladser bliver blandet!`, {
       duration: 5000,
     });
 
@@ -325,13 +313,13 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
 
   return (
     <div className="max-w-6xl mx-auto relative">
-      {/* Christmas Decorative Elements */}
-      <div className="absolute top-0 left-0 text-6xl animate-bounce" style={{animationDelay: '0s'}}>🎄</div>
-      <div className="absolute top-0 right-0 text-5xl animate-bounce" style={{animationDelay: '1s'}}>⭐</div>
-      <div className="absolute top-20 left-10 text-4xl animate-pulse" style={{animationDelay: '0.5s'}}>🎁</div>
-      <div className="absolute top-20 right-10 text-4xl animate-pulse" style={{animationDelay: '1.5s'}}>🔔</div>
-      <div className="absolute top-40 left-20 text-3xl sparkle" style={{animationDelay: '2s'}}>❄️</div>
-      <div className="absolute top-40 right-20 text-3xl sparkle" style={{animationDelay: '0.8s'}}>❄️</div>
+      {/* Theme Decorative Elements */}
+      <div className="absolute top-0 left-0 text-6xl animate-bounce" style={{animationDelay: '0s'}}>{tc.cornerDecorations[0]}</div>
+      <div className="absolute top-0 right-0 text-5xl animate-bounce" style={{animationDelay: '1s'}}>{tc.cornerDecorations[3]}</div>
+      <div className="absolute top-20 left-10 text-4xl animate-pulse" style={{animationDelay: '0.5s'}}>{tc.cornerDecorations[1]}</div>
+      <div className="absolute top-20 right-10 text-4xl animate-pulse" style={{animationDelay: '1.5s'}}>{tc.cornerDecorations[2]}</div>
+      <div className="absolute top-40 left-20 text-3xl sparkle" style={{animationDelay: '2s'}}>{tc.unassignedChairIcon}</div>
+      <div className="absolute top-40 right-20 text-3xl sparkle" style={{animationDelay: '0.8s'}}>{tc.unassignedChairIcon}</div>
       
       {/* Animation Audio */}
       <audio 
@@ -348,10 +336,10 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
       {/* Challenge Modal */}
       {showChallenge && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-red-700 via-green-700 to-red-700 p-8 rounded-3xl border-8 border-yellow-400 shadow-2xl text-center max-w-3xl mx-4">
+          <div className={`bg-gradient-to-br ${tc.cardGradient} p-8 rounded-3xl border-8 border-yellow-400 shadow-2xl text-center max-w-3xl mx-4`}>
             <div className="mb-6">
               <h2 className="text-5xl font-bold text-white mb-4 animate-bounce">
-                🎄 UDFORDRING! 🎅
+                {tc.challengeTitle}
               </h2>
               <p className="text-2xl text-yellow-300 font-bold mb-6">
                 {assignedGuestName}, du skal:
@@ -364,17 +352,16 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
             </div>
             
             <div className="flex justify-center space-x-4 text-5xl mb-6 animate-bounce">
-              <span style={{animationDelay: '0s'}}>🎉</span>
-              <span style={{animationDelay: '0.2s'}}>🎊</span>
-              <span style={{animationDelay: '0.4s'}}>🎁</span>
-              <span style={{animationDelay: '0.6s'}}>⭐</span>
+              {tc.celebrationEmojis.slice(0, 4).map((emoji, i) => (
+                <span key={i} style={{animationDelay: `${i * 0.2}s`}}>{emoji}</span>
+              ))}
             </div>
             
             <button
               onClick={() => setShowChallenge(false)}
               className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold px-8 py-4 rounded-full text-2xl shadow-lg transform hover:scale-105 transition-all duration-200 border-4 border-white"
             >
-              ✅ Udfordring Gennemført!
+              {tc.challengeComplete}
             </button>
           </div>
         </div>
@@ -383,33 +370,41 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
       {/* Santa Shuffle Alert */}
       {showSantaShuffle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-red-600 via-green-600 to-red-600 p-8 rounded-3xl border-8 border-yellow-400 shadow-2xl text-center max-w-4xl mx-4 animate-pulse">
+          <div className={`bg-gradient-to-br ${tc.shuffleCardGradient} p-8 rounded-3xl border-8 border-yellow-400 shadow-2xl text-center max-w-4xl mx-4 animate-pulse`}>
             <div className="mb-6">
-              <img 
-                src="/santa-santa-claus.gif" 
-                alt="Santa shuffling seats" 
-                className="w-80 h-80 mx-auto rounded-full border-8 border-white shadow-2xl"
-              />
+              {tc.characterGif ? (
+                <img 
+                  src={tc.characterGif} 
+                  alt={`${tc.characterName} shuffling seats`} 
+                  className="w-80 h-80 mx-auto rounded-full border-8 border-white shadow-2xl object-contain"
+                />
+              ) : tc.characterImage ? (
+                <img 
+                  src={tc.characterImage} 
+                  alt={`${tc.characterName} shuffling seats`} 
+                  className="w-64 h-64 mx-auto object-contain drop-shadow-2xl animate-bounce"
+                />
+              ) : (
+                <div className="text-[10rem] leading-none mx-auto">{tc.characterEmoji}</div>
+              )}
             </div>
             
             <h2 className="text-6xl font-bold text-white mb-4 animate-bounce">
-              🎅 SURPRISE! 🎄
+              {tc.shuffleTitle}
             </h2>
             
             <p className="text-3xl font-bold text-yellow-300 mb-4">
-              Julemanden siger vi skal skifte pladser!
+              {tc.shuffleText}
             </p>
             
             <p className="text-2xl text-white font-semibold">
-              🔄 Alle skifter pladser! 🔄
+              {tc.shuffleSubText}
             </p>
             
             <div className="mt-6 flex justify-center space-x-4 text-5xl animate-bounce">
-              <span style={{animationDelay: '0s'}}>🎁</span>
-              <span style={{animationDelay: '0.2s'}}>🔔</span>
-              <span style={{animationDelay: '0.4s'}}>⭐</span>
-              <span style={{animationDelay: '0.6s'}}>❄️</span>
-              <span style={{animationDelay: '0.8s'}}>🎁</span>
+              {tc.shuffleEmojis.map((emoji, i) => (
+                <span key={i} style={{animationDelay: `${i * 0.2}s`}}>{emoji}</span>
+              ))}
             </div>
             
             <div className="mt-8">
@@ -417,7 +412,7 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
                 onClick={handleShuffleSeats}
                 className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold px-8 py-4 rounded-full text-2xl shadow-lg transform hover:scale-110 transition-all duration-200 border-4 border-white animate-pulse"
               >
-                🎅 SKIFT PLADSER NU! 🔄
+                {tc.shuffleButton}
               </button>
             </div>
           </div>
@@ -427,10 +422,10 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
       {/* Shuffle Results */}
       {showShuffleResults && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-green-800/90 to-red-800/90 p-8 rounded-3xl border-4 border-yellow-400 shadow-2xl max-w-4xl mx-4 max-h-[80vh] overflow-y-auto">
+          <div className={`bg-gradient-to-br ${tc.shuffleCardGradient.replace('/90', '/90')} bg-opacity-90 p-8 rounded-3xl border-4 border-yellow-400 shadow-2xl max-w-4xl mx-4 max-h-[80vh] overflow-y-auto`}>
             <div className="text-center mb-6">
               <h2 className="text-4xl font-bold text-white mb-4">
-                Julemandens pladsskift Resultater! 🎅
+                {tc.shuffleResultsTitle}
               </h2>
               <p className="text-xl text-yellow-300 mb-6">
                 Her er, hvem der skiftede pladser:
@@ -463,9 +458,9 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
             <div className="text-center">
               <button
                 onClick={() => setShowShuffleResults(false)}
-                className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white font-bold px-8 py-4 rounded-full text-xl shadow-lg transform hover:scale-105 transition-all duration-200 border-4 border-yellow-400"
+                className={`bg-gradient-to-r ${tc.buttonGradient} text-white font-bold px-8 py-4 rounded-full text-xl shadow-lg transform hover:scale-105 transition-all duration-200 border-4 ${tc.buttonBorder}`}
               >
-                🎄 Fortsæt festen! 🎉
+                {tc.continuePartyButton}
               </button>
             </div>
           </div>
@@ -499,23 +494,23 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
         </Card>
       )}
 
-      <Card className="p-3 bg-gradient-to-br from-red-900/20 via-green-900/20 to-red-900/20 border-2 border-red-600/30 shadow-xl mb-3 relative overflow-hidden">
-        {/* Christmas border decoration */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-green-600 to-red-600"></div>
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-green-600 to-red-600"></div>
+      <Card className={`p-3 bg-gradient-to-br ${tc.headerGradient} border-2 ${tc.cardBorder} shadow-xl mb-3 relative overflow-hidden`}>
+        {/* Theme border decoration */}
+        <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${tc.garlandGradient}`}></div>
+        <div className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r ${tc.garlandGradient}`}></div>
         
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 flex items-center gap-2">
-              🎅 Tildelte pladser: {guests.filter(g => g.seated).length} / {guests.length} 🎄
+            <h2 className={`text-2xl font-bold ${tc.headerTextColor} flex items-center gap-2`}>
+              {tc.characterEmoji} {tc.assignedText}: {guests.filter(g => g.seated).length} / {guests.length} {tc.tableDecoration}
             </h2>
           </div>
           {!allSeated && !isAnimating && (
             <Button 
               onClick={assignSeat}
-              className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white font-bold px-4 py-2 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200 gap-2 border-2 border-yellow-400"
+              className={`bg-gradient-to-r ${tc.buttonGradient} text-white font-bold px-4 py-2 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200 gap-2 border-2 ${tc.buttonBorder}`}
             >
-              🎅✨ {assignedCount === 0 ? 'Start festen!' : 'Fortsæt spillet!'} 🎄
+              {tc.characterEmoji}✨ {assignedCount === 0 ? tc.startButton : tc.continueGameButton} {tc.tableDecoration}
             </Button>
           )}
         </div>
@@ -539,13 +534,13 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
               ))}
             </div>
             
-            <h3 className="text-6xl font-bold mb-6 text-red-600 dark:text-red-300 relative z-10">
-              🎅🎉 ALLE GÆSTER ER PLACERET! 🎄✨
+            <h3 className={`text-6xl font-bold mb-6 ${tc.headerTextColor} relative z-10`}>
+              {tc.allSeatedTitle}
             </h3>
             <p className="text-2xl font-bold text-green-600 dark:text-green-300 relative z-10">
-              🎊 GLÆDELIG JUL OG NYD FESTEN! 🥳
+              {tc.allSeatedSubtitle}
             </p>
-            <div className="text-4xl mt-4 animate-pulse relative z-10">🎁🦌🔔⭐🎁</div>
+            <div className="text-4xl mt-4 animate-pulse relative z-10">{tc.allSeatedIcons}</div>
           </div>
         )}
       </Card>
@@ -556,16 +551,16 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
           className="relative bg-gradient-to-br from-amber-900/30 to-amber-800/30 rounded-2xl border-4 border-amber-700/50 overflow-hidden"
           style={{ height: '80vh', width: '100%' }}
         >
-          {/* Floating Christmas Elements */}
-          <div className="absolute top-10 left-10 text-4xl animate-bounce" style={{animationDelay: '0s'}}>🎁</div>
-          <div className="absolute top-10 right-10 text-4xl animate-bounce" style={{animationDelay: '1s'}}>🔔</div>
-          <div className="absolute bottom-10 left-10 text-4xl animate-bounce" style={{animationDelay: '2s'}}>🦌</div>
-          <div className="absolute bottom-10 right-10 text-4xl animate-bounce" style={{animationDelay: '0.5s'}}>⭐</div>
+          {/* Floating Theme Elements */}
+          <div className="absolute top-10 left-10 text-4xl animate-bounce" style={{animationDelay: '0s'}}>{tc.cornerDecorations[0]}</div>
+          <div className="absolute top-10 right-10 text-4xl animate-bounce" style={{animationDelay: '1s'}}>{tc.cornerDecorations[1]}</div>
+          <div className="absolute bottom-10 left-10 text-4xl animate-bounce" style={{animationDelay: '2s'}}>{tc.cornerDecorations[2]}</div>
+          <div className="absolute bottom-10 right-10 text-4xl animate-bounce" style={{animationDelay: '0.5s'}}>{tc.cornerDecorations[3]}</div>
           {/* Table */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-amber-700 to-amber-900 border-8 border-amber-600 shadow-2xl rounded-lg" style={{ width: '90%', height: '80%' }}>
             <div className="absolute inset-4 border-4 border-amber-500/30 rounded-lg"></div>
             {/* Table center decoration */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl animate-pulse">🎄</div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl animate-pulse">{tc.tableDecoration}</div>
           </div>
 
           {/* Chairs */}
@@ -580,17 +575,17 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
               }}
             >
               <div className="text-center relative">
-                {/* Christmas chair decorations */}
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{animationDelay: `${index * 0.2}s`}}>🎄</div>
+                {/* Chair decoration */}
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{animationDelay: `${index * 0.2}s`}}>{tc.chairDecoration}</div>
                 <div className="text-7xl mb-1 filter drop-shadow-lg">🪑</div>
                 {chair.assigned && (
                   <div className="bg-gradient-to-r from-red-600 to-green-600 text-white px-3 py-2 rounded-full text-sm font-bold shadow-lg border-2 border-yellow-400 relative">
-                    <div className="absolute -top-1 -right-1 text-lg">⭐</div>
+                    <div className="absolute -top-1 -right-1 text-lg">{tc.assignedChairStar}</div>
                     {chair.assigned}
                   </div>
                 )}
                 {!chair.assigned && (
-                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-xl animate-pulse">❄️</div>
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-xl animate-pulse">{tc.unassignedChairIcon}</div>
                 )}
               </div>
             </div>
@@ -614,11 +609,15 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
                 <div className="absolute -bottom-2 -left-2 text-2xl animate-ping" style={{animationDelay: '0.4s'}}>❄️</div>
                 <div className="absolute -bottom-2 -right-2 text-2xl animate-ping" style={{animationDelay: '0.6s'}}>🎁</div>
                 
-                <img 
-                  src="/Julemanden.png" 
-                  alt="Santa choosing seat" 
-                  className="w-24 h-24 animate-bounce drop-shadow-2xl filter brightness-110 contrast-110"
-                />
+                {tc.characterImage ? (
+                  <img 
+                    src={tc.characterImage} 
+                    alt={`${tc.characterName} choosing seat`} 
+                    className="w-24 h-24 animate-bounce drop-shadow-2xl filter brightness-110 contrast-110"
+                  />
+                ) : (
+                  <div className="text-8xl animate-bounce drop-shadow-2xl">{tc.characterEmoji}</div>
+                )}
                 
                 {/* Magic trail */}
                 <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-radial from-yellow-400/30 to-transparent rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse -z-10"></div>
@@ -629,12 +628,12 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
       </Card>
 
       {/* Guest List */}
-      <Card className="p-3 bg-gradient-to-br from-green-900/20 via-red-900/20 to-green-900/20 border-2 border-green-600/30 shadow-xl mt-3 relative overflow-hidden">
-        {/* Christmas garland decoration */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-600 via-red-600 to-green-600"></div>
+      <Card className={`p-3 bg-gradient-to-br ${tc.headerGradient} border-2 ${tc.cardBorder} shadow-xl mt-3 relative overflow-hidden`}>
+        {/* Theme garland decoration */}
+        <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${tc.garlandGradient}`}></div>
         
-        <h3 className="text-xl font-bold mb-3 text-green-700 dark:text-green-300 flex items-center justify-center gap-2">
-          🎄 Julefrokost Gæster 🎅
+        <h3 className={`text-xl font-bold mb-3 ${tc.headerTextColor} flex items-center justify-center gap-2`}>
+          {tc.guestListTitle}
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {guests.map((guest, i) => (
@@ -642,7 +641,7 @@ export const SeatAssignment = ({ chairs: initialChairs, guests: initialGuests }:
               key={i}
               className={`p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 relative ${
                 guest.seated 
-                  ? 'bg-gradient-to-br from-red-600 to-green-600 text-white border-yellow-400 shadow-lg' 
+                  ? `bg-gradient-to-br ${tc.seatedGuestGradient} text-white border-yellow-400 shadow-lg` 
                   : 'bg-gradient-to-br from-gray-200 to-gray-300 text-gray-700 border-gray-400 dark:from-gray-700 dark:to-gray-600 dark:text-gray-200'
               }`}
             >

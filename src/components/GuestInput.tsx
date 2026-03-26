@@ -5,13 +5,16 @@ import { Card } from "@/components/ui/card";
 import { Guest } from "@/pages/Index";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { Theme, themeConfigs } from "@/lib/themeConfig";
 
 interface GuestInputProps {
   chairCount: number;
   onComplete: (guests: Guest[]) => void;
+  theme?: Theme;
 }
 
-export const GuestInput = ({ chairCount, onComplete }: GuestInputProps) => {
+export const GuestInput = ({ chairCount, onComplete, theme = 'christmas' }: GuestInputProps) => {
+  const tc = themeConfigs[theme];
   const [guestName, setGuestName] = useState("");
   const [guests, setGuests] = useState<Guest[]>([]);
 
@@ -45,7 +48,7 @@ export const GuestInput = ({ chairCount, onComplete }: GuestInputProps) => {
       return;
     }
     onComplete(guests);
-    toast.success("Lad siddepladserne begynde! 🎅");
+    toast.success(`Lad siddepladserne begynde! ${tc.characterEmoji}`);
   };
 
   return (

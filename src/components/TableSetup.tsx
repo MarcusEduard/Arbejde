@@ -4,12 +4,15 @@ import { Card } from "@/components/ui/card";
 import { Chair } from "@/pages/Index";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { Theme, themeConfigs } from "@/lib/themeConfig";
 
 interface TableSetupProps {
   onComplete: (chairs: Chair[]) => void;
+  theme?: Theme;
 }
 
-export const TableSetup = ({ onComplete }: TableSetupProps) => {
+export const TableSetup = ({ onComplete, theme = 'christmas' }: TableSetupProps) => {
+  const tc = themeConfigs[theme];
   const [chairs, setChairs] = useState<Chair[]>([]);
   const [draggedChair, setDraggedChair] = useState<string | null>(null);
 
@@ -85,17 +88,17 @@ export const TableSetup = ({ onComplete }: TableSetupProps) => {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          {/* Floating Christmas Elements */}
-          <div className="absolute top-10 left-10 text-4xl animate-bounce" style={{animationDelay: '0s'}}>🎁</div>
-          <div className="absolute top-10 right-10 text-4xl animate-bounce" style={{animationDelay: '1s'}}>🔔</div>
-          <div className="absolute bottom-10 left-10 text-4xl animate-bounce" style={{animationDelay: '2s'}}>🦌</div>
-          <div className="absolute bottom-10 right-10 text-4xl animate-bounce" style={{animationDelay: '0.5s'}}>⭐</div>
+          {/* Floating Theme Elements */}
+          <div className="absolute top-10 left-10 text-4xl animate-bounce" style={{animationDelay: '0s'}}>{tc.cornerDecorations[0]}</div>
+          <div className="absolute top-10 right-10 text-4xl animate-bounce" style={{animationDelay: '1s'}}>{tc.cornerDecorations[1]}</div>
+          <div className="absolute bottom-10 left-10 text-4xl animate-bounce" style={{animationDelay: '2s'}}>{tc.cornerDecorations[2]}</div>
+          <div className="absolute bottom-10 right-10 text-4xl animate-bounce" style={{animationDelay: '0.5s'}}>{tc.cornerDecorations[3]}</div>
           
           {/* Table */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-amber-700 to-amber-900 border-8 border-amber-600 shadow-2xl rounded-lg" style={{ width: '90%', height: '80%' }}>
             <div className="absolute inset-4 border-4 border-amber-500/30 rounded-lg"></div>
             {/* Table center decoration */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl">🎄</div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl">{tc.tableDecoration}</div>
           </div>
 
           {/* Chairs */}
